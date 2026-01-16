@@ -27,10 +27,12 @@ public class StompMessagingProtocolIMPL implements StompMessagingProtocol<String
     }
     
     @Override
-    public void process(String message){
+    //changed to return String because of the interface change (extended MessagingProtocol that has T process(T message)
+    public String process(String message){
         String[] lines = ((String) message).split("\n");
         String FrameCommand = lines[0];
         this.check_frame(FrameCommand, lines, message);
+        return null;
     }
 
 	/**
@@ -136,6 +138,10 @@ public class StompMessagingProtocolIMPL implements StompMessagingProtocol<String
     private void h_send(String lines[], String msg) {
         String des = get_header(lines, "destination");
         this.connections.send(des, msg);
+        String receiptId = get_header(lines, "receipt");
+        if (receiptId != null) {
+            send_receipt("receipt-id:" + receiptId + "\n\n");
+        }
     } 
     
     
@@ -144,6 +150,10 @@ public class StompMessagingProtocolIMPL implements StompMessagingProtocol<String
         String sub_id = get_header(lines, "id");
         this.subscriptions.put(sub_id, des);
         this.connections.subscribe(this.connectionId, des, sub_id);
+        String receiptId = get_header(lines, "receipt");
+        if (receiptId != null) {
+            send_receipt("receipt-id:" + receiptId + "\n\n");
+        }
         //need to handle error.
     } 
     
@@ -154,6 +164,10 @@ public class StompMessagingProtocolIMPL implements StompMessagingProtocol<String
             String des_for_unsub = this.subscriptions.get(sub_id);
             if ( des_for_unsub != null) 
                 this.connections.unsubscribe(this.connectionId, des_for_unsub);
+        }
+        String receiptId = get_header(lines, "receipt");
+        if (receiptId != null) {
+            send_receipt("receipt-id:" + receiptId + "\n\n");
         }
     } 
     

@@ -106,6 +106,9 @@ public class StompMessagingProtocolIMPL implements StompMessagingProtocol<String
             return;
         }
         //Now let's check if the user is allready logged in.
+
+
+        //potential need for sychronized block here.
         if (loggedInUsers.contains(login)) {
             this.send_error("User is allready logged in, please enter a different username");
             return;
@@ -141,7 +144,6 @@ public class StompMessagingProtocolIMPL implements StompMessagingProtocol<String
         String sub_id = get_header(lines, "id");
         this.subscriptions.put(sub_id, des);
         this.connections.subscribe(this.connectionId, des, sub_id);
-
         //need to handle error.
     } 
     
@@ -179,7 +181,6 @@ public class StompMessagingProtocolIMPL implements StompMessagingProtocol<String
     private void send_error(String msg) {
         String error_msg = "ERROR\n" + "message:" + msg + "\n\n";
         this.connections.send(this.connectionId, error_msg);
-        //How do i generate a proper error message?
     }
 
 }

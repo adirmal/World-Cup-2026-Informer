@@ -37,7 +37,7 @@ public class ConnectionsIMPL<T> implements Connections<T> {
                 Integer ch_id = entry.getKey();
                 String sub_id = entry.getValue();
                 String personal_msg = "MESSAGE\n" + "subscription:" + sub_id + "\n" + "message-id:" + msg_id + "\n" +
-                                         "destination:" + channel + "\n\n" + msg + "\u0000"; //u0000 is the null char for the end of the message as asked
+                                         "destination:" + channel + "\n\n" + msg;
                 send(ch_id, (T)(personal_msg));
             }
         }
